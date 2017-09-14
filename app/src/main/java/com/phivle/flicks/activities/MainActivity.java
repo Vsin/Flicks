@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         client.get(api_url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                JSONArray movieJsonResults = null;
+                JSONArray movieJsonResults;
 
                 try {
                     movieJsonResults = response.getJSONArray("results");
