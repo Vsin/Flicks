@@ -14,23 +14,6 @@ public class Movie {
     String originalTitle;
     String overview;
 
-    public String getBackdropPath() {
-        return String.format(img_url_base, backdropPath);
-    }
-
-    public String getPosterPath() {
-        return String.format(img_url_base, posterPath);
-    }
-
-    public String getOriginalTitle() {
-        return originalTitle;
-    }
-
-    public String getOverview() {
-        return overview;
-    }
-
-
     public Movie(JSONObject jsonObject) throws JSONException {
         this.backdropPath = jsonObject.getString("backdrop_path");
         this.posterPath = jsonObject.getString("poster_path");
@@ -50,6 +33,22 @@ public class Movie {
         }
 
         return results;
+    }
+
+    public String getBackdropPath() {
+        return String.format(img_url_base, backdropPath);
+    }
+
+    public String getPosterPath() {
+        return String.format(img_url_base, posterPath);
+    }
+
+    public String getOriginalTitle() {
+        return originalTitle;
+    }
+
+    public String getOverview() {
+        return overview;
     }
 
 }

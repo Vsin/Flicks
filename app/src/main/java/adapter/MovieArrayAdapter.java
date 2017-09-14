@@ -52,17 +52,25 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
         movie = getItem(position);
 
-        viewHolder.image.setImageResource(0);
-        viewHolder.title.setText(movie.getOriginalTitle());
-        viewHolder.overview.setText(movie.getOverview());
+        setViewHolderElements(movie, viewHolder);
 
+        return convertView;
+    }
+
+    private void loadViewholderImage(Movie movie, ViewHolder viewHolder) {
         int orientation = getContext().getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Picasso.with(getContext()).load(movie.getBackdropPath()).into(viewHolder.image);
         } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             Picasso.with(getContext()).load(movie.getPosterPath()).into(viewHolder.image);
         }
+    }
 
-        return convertView;
+    private void setViewHolderElements(Movie movie, ViewHolder viewHolder) {
+        loadViewholderImage(movie, viewHolder);
+
+        viewHolder.image.setImageResource(0);
+        viewHolder.title.setText(movie.getOriginalTitle());
+        viewHolder.overview.setText(movie.getOverview());
     }
 }

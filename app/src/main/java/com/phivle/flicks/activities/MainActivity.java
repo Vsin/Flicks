@@ -23,14 +23,13 @@ import adapter.MovieArrayAdapter;
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
-    List<Movie> movies;
-    ArrayAdapter<Movie> moviesAdapter;
-    ListView lvMovies;
-
     final String api_url = "https://api.themoviedb.org/3/movie/now_playing";
     final String api_key = "a9ca642dc47483882bcb4b4748c60473";
     final String language = "en-US";
     final String page = "1";
+    List<Movie> movies;
+    ArrayAdapter<Movie> moviesAdapter;
+    ListView lvMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
