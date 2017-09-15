@@ -8,17 +8,24 @@ import java.util.ArrayList;
 
 public class Movie {
 
-    final String img_url_base = "https://image.tmdb.org/t/p/w342/%s";
+    final static String IMG_URL_BASE = "https://image.tmdb.org/t/p/w%s/%s";
     String posterPath;
     String backdropPath;
     String originalTitle;
     String overview;
+    double voteAverage;
+
+    public enum MovieClassification {
+        POPULAR, UNPOPULAR
+    }
+
 
     public Movie(JSONObject jsonObject) throws JSONException {
         this.backdropPath = jsonObject.getString("backdrop_path");
         this.posterPath = jsonObject.getString("poster_path");
         this.originalTitle = jsonObject.getString("original_title");
         this.overview = jsonObject.getString("overview");
+        this.voteAverage = jsonObject.getDouble("vote_average");
     }
 
     public static ArrayList<Movie> fromJsonArray(JSONArray array) {
@@ -35,12 +42,16 @@ public class Movie {
         return results;
     }
 
-    public String getBackdropPath() {
-        return String.format(img_url_base, backdropPath);
+    public double getVoteAverage() {
+        return voteAverage;
     }
 
-    public String getPosterPath() {
-        return String.format(img_url_base, posterPath);
+    public String getBackdropPath(String width) {
+        return String.format(IMG_URL_BASE, width, backdropPath);
+    }
+
+    public String getPosterPath(String width) {
+        return String.format(IMG_URL_BASE, width, posterPath);
     }
 
     public String getOriginalTitle() {
@@ -50,5 +61,4 @@ public class Movie {
     public String getOverview() {
         return overview;
     }
-
 }

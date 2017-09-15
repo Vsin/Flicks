@@ -26,10 +26,11 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    final String apiUrl = "https://api.themoviedb.org/3/movie/now_playing";
-    final String apiKey = "a9ca642dc47483882bcb4b4748c60473";
-    final String language = "en-US";
-    final String page = "1";
+
+    final static String API_URL = "https://api.themoviedb.org/3/movie/now_playing";
+    final static String API_KEY = "a9ca642dc47483882bcb4b4748c60473";
+    final static String LANGUAGE = "en-US";
+    final static String PAGE = "1";
     List<Movie> movies;
     ArrayAdapter<Movie> moviesAdapter;
     ListView lvMovies;
@@ -44,23 +45,28 @@ public class MainActivity extends AppCompatActivity {
         updateDisplayedMovies();
     }
 
-    private void updateDisplayedMovies() {
-        OkHttpClient client;
+    private Request buildNowPlayingRequest() {
         HttpUrl.Builder urlBuilder;
         String requestUrl;
-        Request request;
 
-        urlBuilder = HttpUrl.parse(apiUrl).newBuilder();
-        urlBuilder.addQueryParameter("api_key", apiKey);
-        urlBuilder.addQueryParameter("language", language);
-        urlBuilder.addQueryParameter("page", page);
+        urlBuilder = HttpUrl.parse(API_URL).newBuilder();
+        urlBuilder.addQueryParameter("api_key", API_KEY);
+        urlBuilder.addQueryParameter("language", LANGUAGE);
+        urlBuilder.addQueryParameter("page", PAGE);
 
         requestUrl = urlBuilder.build().toString();
 
-        request = new Request.Builder().url(requestUrl).build();
+        return new Request.Builder().url(requestUrl).build();
+    }
+
+    private void updateDisplayedMovies() {
+        OkHttpClient client;
+        Request nowPlayingRequest;
+
+        nowPlayingRequest = buildNowPlayingRequest();
         client = new OkHttpClient();
 
-        client.newCall(request).enqueue(new Callback() {
+        client.newCall(nowPlayingRequest).enqueue(new Callback() {
             String movieJsonResponse;
             JSONArray movieResults;
 
@@ -73,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
 
                 movieJsonResponse = response.body().string();
+
                 try {
                     JSONObject responseJson = new JSONObject(movieJsonResponse);
                     movieResults = responseJson.getJSONArray("results");
@@ -81,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
 
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
