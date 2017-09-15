@@ -6,9 +6,6 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.phivle.flicks.R;
 import com.phivle.flicks.model.Movie;
 
@@ -16,15 +13,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.MovieArrayAdapter;
-import cz.msebera.android.httpclient.Header;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-    final String api_url = "https://api.themoviedb.org/3/movie/now_playing";
-    final String api_key = "a9ca642dc47483882bcb4b4748c60473";
+    final String apiUrl = "https://api.themoviedb.org/3/movie/now_playing";
+    final String apiKey = "a9ca642dc47483882bcb4b4748c60473";
     final String language = "en-US";
     final String page = "1";
     List<Movie> movies;
@@ -42,30 +45,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateDisplayedMovies() {
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-        params.put("api_key", api_key);
-        params.put("language", language);
-        params.put("page", page);
+        OkHttpClient client;
+        HttpUrl.Builder urlBuilder;
+        String requestUrl;
+        Request request;
 
-        client.get(api_url, params, new JsonHttpResponseHandler() {
+        urlBuilder = HttpUrl.parse(apiUrl).newBuilder();
+        urlBuilder.addQueryParameter("api_key", apiKey);
+        urlBuilder.addQueryParameter("language", language);
+        urlBuilder.addQueryParameter("page", page);
+
+        requestUrl = urlBuilder.build().toString();
+
+        request = new Request.Builder().url(requestUrl).build();
+        client = new OkHttpClient();
+
+        client.newCall(request).enqueue(new Callback() {
+            String movieJsonResponse;
+            JSONArray movieResults;
+
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                JSONArray movieJsonResults;
-
-                try {
-                    movieJsonResults = response.getJSONArray("results");
-                    movies.addAll(Movie.fromJsonArray(movieJsonResults));
-                    updateMoviesAdapter();
-                    Log.d("DEBUG", movieJsonResults.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+            public void onResponse(Call call, Response response) throws IOException {
+
+                movieJsonResponse = response.body().string();
+                try {
+                    JSONObject responseJson = new JSONObject(movieJsonResponse);
+                    movieResults = responseJson.getJSONArray("results");
+                    Log.d("test", movieResults.toString());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("test", movieResults.toString());
+                        movies.addAll(Movie.fromJsonArray(movieResults));
+                        updateMoviesAdapter();
+                    }
+
+                });
             }
         });
     }
