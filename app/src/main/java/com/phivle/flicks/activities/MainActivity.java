@@ -1,8 +1,11 @@
 package com.phivle.flicks.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -43,6 +46,25 @@ public class MainActivity extends AppCompatActivity {
         movies = new ArrayList<>();
 
         updateDisplayedMovies();
+        setupListViewListener();
+    }
+
+    private void setupListViewListener() {
+        lvMovies.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
+                Movie viewMovieDetail = movies.get(pos);
+                launchMovieDetailIntent(viewMovieDetail, pos);
+            }
+        });
+    }
+
+    private void launchMovieDetailIntent(Movie viewMovieDetail, int pos) {
+        Intent viewMovieDetailIntent = new Intent(MainActivity.this, ViewMovieDetailActivity.class);
+        viewMovieDetailIntent.putExtra("title", viewMovieDetail.getPopularity());
+        viewMovieDetailIntent.putExtra("popularity", viewMovieDetail.getPopularity());
+        viewMovieDetailIntent.putExtra("rating", viewMovieDetail.getVoteAverage());
+        viewMovieDetailIntent.putExtra("overview", viewMovieDetail.getOverview());
     }
 
     private Request buildNowPlayingRequest() {
@@ -57,6 +79,16 @@ public class MainActivity extends AppCompatActivity {
         requestUrl = urlBuilder.build().toString();
 
         return new Request.Builder().url(requestUrl).build();
+    }
+    private void updateMoviesAdapter() {
+        if (moviesAdapter == null) {
+            moviesAdapter = new MovieArrayAdapter(this, movies);
+            lvMovies.setAdapter(moviesAdapter);
+        } else {
+            moviesAdapter.clear();
+            moviesAdapter.addAll(movies);
+            moviesAdapter.notifyDataSetChanged();
+        }
     }
 
     private void updateDisplayedMovies() {
@@ -102,14 +134,5 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void updateMoviesAdapter() {
-        if (moviesAdapter == null) {
-            moviesAdapter = new MovieArrayAdapter(this, movies);
-            lvMovies.setAdapter(moviesAdapter);
-        } else {
-            moviesAdapter.clear();
-            moviesAdapter.addAll(movies);
-            moviesAdapter.notifyDataSetChanged();
-        }
-    }
+
 }

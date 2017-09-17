@@ -26,6 +26,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
 
     final static int POPULAR = 0;
     final static int UNPOPULAR = 1;
+    final static double AVERAGE_THRESHOLD = 5.0;
 
     private static class PopularMovieViewHolder {
         ImageView image;
@@ -49,7 +50,7 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
     @Override
     public int getItemViewType(int position) {
         Movie item = getItem(position);
-        if (item.getVoteAverage() >= 5.0) {
+        if (item.getVoteAverage() >= AVERAGE_THRESHOLD) {
             return Movie.MovieClassification.POPULAR.ordinal();
         } else {
             return Movie.MovieClassification.UNPOPULAR.ordinal();

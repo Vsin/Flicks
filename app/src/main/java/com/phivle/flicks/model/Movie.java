@@ -14,11 +14,11 @@ public class Movie {
     String originalTitle;
     String overview;
     double voteAverage;
+    double popularity;
 
     public enum MovieClassification {
         POPULAR, UNPOPULAR
     }
-
 
     public Movie(JSONObject jsonObject) throws JSONException {
         this.backdropPath = jsonObject.getString("backdrop_path");
@@ -26,6 +26,7 @@ public class Movie {
         this.originalTitle = jsonObject.getString("original_title");
         this.overview = jsonObject.getString("overview");
         this.voteAverage = jsonObject.getDouble("vote_average");
+        this.popularity = jsonObject.getDouble("popularity");
     }
 
     public static ArrayList<Movie> fromJsonArray(JSONArray array) {
@@ -40,6 +41,10 @@ public class Movie {
         }
 
         return results;
+    }
+
+    public double getPopularity() {
+        return popularity;
     }
 
     public double getVoteAverage() {
